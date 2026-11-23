@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.2.0 # downloads the news page and talks to Gemini
+  html: ^0.15.4 # reads the title and text from the page
+  shared_preferences: ^2.2.0 # keeps saved stories after the app closes
+  firebase_core: ^5.2.0
+  firebase_auth: ^7.1.0
 
 dev_dependencies:
   flutter_test:

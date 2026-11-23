@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "852122286546",
+    "project_id": "truefeedauth",
+    "storage_bucket": "truefeedauth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852122286546:android:aa7a05687e74f74adf700b",
+        "android_client_info": {
+          "package_name": "com.example.truefeed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxh2LAddUp6SjHgy7amLxxkXKADAC0pyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

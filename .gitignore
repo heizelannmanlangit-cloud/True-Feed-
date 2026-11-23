@@ -19,3 +19,4 @@ Thumbs.db
 android/local.properties
 android/.gradle/
 ios/Pods/
+.flutter-plugins-dependencies
