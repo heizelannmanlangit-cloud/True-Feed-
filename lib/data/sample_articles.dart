@@ -1,7 +1,6 @@
 import '../models/article.dart';
 
-// Sample stories for now.
-// TODO: replace with real news later (RSS feeds or a news API).
+// Sample stories for now but eplace with real news later (RSS feeds or a news API)
 const List<Article> sampleArticles = [
   Article(
     id: 1,
