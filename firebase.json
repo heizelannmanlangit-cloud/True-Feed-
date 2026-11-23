@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"truefeedauth","appId":"1:852122286546:android:aa7a05687e74f74adf700b","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"truefeedauth","configurations":{"android":"1:852122286546:android:aa7a05687e74f74adf700b","web":"1:852122286546:web:8c056341a963163edf700b"}}}}}}
