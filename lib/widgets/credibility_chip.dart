@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/article.dart';
 
-// Small label that shows Verified, Caution or Unverified.
-// The label has text AND color, so it is not color only.
 class CredibilityChip extends StatelessWidget {
   final Credibility credibility;
 
