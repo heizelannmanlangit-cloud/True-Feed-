@@ -147,8 +147,12 @@ class FeedViewModel extends ChangeNotifier {
 
     try {
       final article = await _service.checkUrl(url);
-      _checked.insert(0, article);
-      await _saveToPhone();
+      // Only keep real answers (yes / partial / no).
+      // An "error" result is shown once but never added to the feed or saved.
+      if (article.match != 'error') {
+        _checked.insert(0, article);
+        await _saveToPhone();
+      }
       return article;
     } on CheckException catch (e) {
       _errorMessage = e.message;
@@ -177,9 +181,16 @@ class FeedViewModel extends ChangeNotifier {
       }
 
       final items = prefs.getStringList('checkedArticles') ?? [];
+      var foundError = false;
       for (final item in items) {
         final map = jsonDecode(item) as Map<String, dynamic>;
-        _checked.add(Article.fromJson(map));
+        final article = Article.fromJson(map);
+        // Skip old "Couldn't check" results that were saved before
+        if (article.match == 'error') {
+          foundError = true;
+        } else {
+          _checked.add(article);
+        }
       }
 
       final unverified = prefs.getStringList('unverifiedIds') ?? [];
@@ -197,6 +208,11 @@ class FeedViewModel extends ChangeNotifier {
       }
 
       notifyListeners();
+
+      // Save again without the error results so they are gone for good
+      if (foundError) {
+        await _saveToPhone();
+      }
     } catch (e) {
     }
   }

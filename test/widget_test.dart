@@ -34,7 +34,7 @@ void main() {
     await tester.tap(find.text('Senate passes new tuition subsidy bill'));
     await tester.pumpAndSettle();
     expect(find.text('Article'), findsOneWidget);
-    expect(find.text('92% match'), findsOneWidget);
+    expect(find.text('The headline matches the article.'), findsOneWidget);
     expect(find.text('Headline Check'), findsOneWidget);
   });
 

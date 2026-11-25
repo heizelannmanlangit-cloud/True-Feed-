@@ -5,7 +5,7 @@ import '../viewmodels/feed_view_model.dart';
 import '../widgets/credibility_chip.dart';
 import 'report_screen.dart';
 
-class ArticleScreen extends StatelessWidget {
+class ArticleScreen extends StatefulWidget {
   final Article article;
   final FeedViewModel viewModel;
 
@@ -14,6 +14,39 @@ class ArticleScreen extends StatelessWidget {
     required this.article,
     required this.viewModel,
   });
+
+  @override
+  State<ArticleScreen> createState() => _ArticleScreenState();
+}
+
+class _ArticleScreenState extends State<ArticleScreen> {
+  // The story shown on this screen. Retry can replace it with a new result.
+  late Article article = widget.article;
+  bool retrying = false;
+
+  FeedViewModel get viewModel => widget.viewModel;
+
+  // Runs the headline check again for the same link
+  Future<void> retry() async {
+    setState(() => retrying = true);
+
+    final newArticle = await viewModel.checkLink(article.url);
+    if (!mounted) return;
+
+    setState(() {
+      retrying = false;
+      if (newArticle != null) {
+        article = newArticle;
+      }
+    });
+
+    // The page itself could not be read (for example no internet)
+    if (newArticle == null && viewModel.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(viewModel.errorMessage!)),
+      );
+    }
+  }
 
   Widget _compareBox(String label, String text) {
     return Container(
@@ -39,13 +72,17 @@ class ArticleScreen extends StatelessWidget {
   }
 
   String _verdict() {
-    if (article.matchPercent >= 75) {
+    final label = article.matchLabel;
+    if (label == 'Matches') {
       return 'The headline matches the article.';
     }
-    if (article.matchPercent >= 50) {
+    if (label == 'Partly matches') {
       return 'The headline only partly matches the article.';
     }
-    return 'This headline may be misleading.';
+    if (label == "Doesn't match") {
+      return 'This headline may be misleading.';
+    }
+    return 'The headline could not be checked. The reason is shown under "Why this rating".';
   }
 
   @override
@@ -85,6 +122,8 @@ class ArticleScreen extends StatelessWidget {
          
           const SizedBox(height: 16),
 
+          // An error result is never saved, so hide Save and Report for it
+          if (article.match != 'error')
           Row(
             children: [
               ListenableBuilder(
@@ -139,7 +178,7 @@ class ArticleScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   
                   Text(
-                    '${article.matchPercent}% match',
+                    article.matchWithPercent,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -149,6 +188,22 @@ class ArticleScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   
                   Text(_verdict()),
+
+                  // Retry button, only when the check failed
+                  if (article.match == 'error' && article.url.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: retrying ? null : retry,
+                      icon: retrying
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
+                      label: Text(retrying ? 'Checking...' : 'Retry'),
+                    ),
+                  ],
                   _compareBox('Headline says', article.title),
                   _compareBox('Article says', article.articleSays),
                 ],

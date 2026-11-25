@@ -24,7 +24,7 @@ class ArticleCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CredibilityChip(credibility: article.credibility),
-                      Text('${article.matchPercent}% match'),
+                      Text(article.matchWithPercent),
                     ],
                   ),
 

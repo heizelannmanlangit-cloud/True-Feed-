@@ -9,6 +9,7 @@ class Article {
   final String topic;
   final Credibility credibility;
   final int matchPercent; // how closely the headline matches the article
+  final String match; // Gemini answer: "yes", "partial", "no", "error" ('' for old stories)
   final String articleSays; // what the article actually says
   final String whyRating; // short reason for the label
   final String url; // link to the real article ('' for sample stories)
@@ -21,10 +22,38 @@ class Article {
     required this.topic,
     required this.credibility,
     required this.matchPercent,
+    this.match = '',
     required this.articleSays,
     required this.whyRating,
     this.url = '',
   });
+
+  // Short text for the headline check, e.g. "Matches"
+  String get matchLabel {
+    var answer = match;
+    // Older stories have no answer saved, so use the percent instead
+    if (answer.isEmpty) {
+      if (matchPercent >= 75) {
+        answer = 'yes';
+      } else if (matchPercent >= 50) {
+        answer = 'partial';
+      } else {
+        answer = 'no';
+      }
+    }
+    if (answer == 'yes') return 'Matches';
+    if (answer == 'partial') return 'Partly matches';
+    if (answer == 'no') return "Doesn't match";
+    return "Couldn't check";
+  }
+
+  // The label with the percent, e.g. "Matches - 92%"
+  String get matchWithPercent {
+    if (match == 'error') {
+      return matchLabel; // no percent when the check failed
+    }
+    return '$matchLabel - $matchPercent%';
+  }
 
   // Two stories are the same story if they have the same id
   @override
@@ -43,6 +72,7 @@ class Article {
       topic: topic,
       credibility: Credibility.unverified,
       matchPercent: matchPercent,
+      match: match,
       articleSays: articleSays,
       whyRating: 'A reviewer marked this story Unverified after reports. '
           '$whyRating',
@@ -60,6 +90,7 @@ class Article {
       'topic': topic,
       'credibility': credibility.name,
       'matchPercent': matchPercent,
+      'match': match,
       'articleSays': articleSays,
       'whyRating': whyRating,
       'url': url,
@@ -76,6 +107,7 @@ class Article {
       topic: json['topic'] as String,
       credibility: Credibility.values.byName(json['credibility'] as String),
       matchPercent: json['matchPercent'] as int,
+      match: (json['match'] as String?) ?? '',
       articleSays: json['articleSays'] as String,
       whyRating: json['whyRating'] as String,
       url: (json['url'] as String?) ?? '',
